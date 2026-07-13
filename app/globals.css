@@ -65,8 +65,9 @@
   --accent: #e6ddc8;
   --accent-foreground: #303030;
   --destructive: #c93d12;
-  --border: rgb(48 48 48 / 14%);
-  --input: rgb(48 48 48 / 18%);
+  /* NASA-GSM-inspired: visible grid rules, square corners (radius 0 below). */
+  --border: rgb(48 48 48 / 22%);
+  --input: rgb(48 48 48 / 26%);
   --ring: #435c7e;
   /* Brand programmatic palette; gold and green darkened to stay legible on cream. */
   --chart-1: #435c7e;
@@ -74,7 +75,7 @@
   --chart-3: #b8912a;
   --chart-4: #1e9e70;
   --chart-5: #8e5283;
-  --radius: 0.625rem;
+  --radius: 0rem;
   --sidebar: #faf6ec;
   --sidebar-foreground: #303030;
   --sidebar-primary: #303030;
