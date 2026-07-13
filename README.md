@@ -1,85 +1,138 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ASC Admin Dashboard
 
-## Getting Started
+An internal Austin STEM Center dashboard that brings together a team member's Google Calendar, recent Google Drive files, and assigned ClickUp tasks.
 
-First, run the development server:
+This project is currently in a small internal pilot. It is intended for a few ASC staff members to test on a Vercel deployment before the product and integrations are finalized.
+
+## Current pilot scope
+
+- Google-only sign-in through Clerk
+- This week's events from the signed-in user's primary Google Calendar
+- The eight most recently modified files visible to the user in Google Drive
+- ClickUp tasks assigned to the signed-in user, when ClickUp OAuth is configured
+- Responsive desktop and mobile layouts
+
+The dashboard is read-only. It does not edit Google Calendar events, modify Drive files, or change ClickUp tasks.
+
+## Local development
+
+Requirements:
+
+- Node.js 20 or newer
+- pnpm 11
+- A Clerk application with Google enabled
+
+Install dependencies and start the app:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+pnpm install
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3001](http://localhost:3001).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Create `.env.local` with the Clerk keys:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_...
+CLERK_SECRET_KEY=sk_test_...
+```
 
-## Google sign-in setup
+ClickUp is optional during the pilot. If its variables are omitted, the dashboard displays the ClickUp section as coming soon.
 
-The landing page uses Google's rendered **Sign in with Google** button and
-passes the resulting credential to Clerk. Before it can be used, configure the
-same Google OAuth client in both services:
+```bash
+CLICKUP_CLIENT_ID=...
+CLICKUP_CLIENT_SECRET=...
+```
 
-1. In Clerk, go to **SSO connections** and add a Google connection for all
-   users. Enable sign-up and sign-in, turn on **Use custom credentials**, and
-   save the Clerk-provided authorized redirect URI.
-2. In Google Cloud Console, create a Web application OAuth client. Add each
-   local and production site URL as an authorized JavaScript origin, and paste
-   the exact Clerk-provided URI as its authorized redirect URI.
-3. Paste the Google client ID into the Clerk connection and add it to
-   `.env.local`:
+## Google and Clerk setup
 
-   ```bash
-   NEXT_PUBLIC_GOOGLE_CLIENT_ID=your-google-oauth-client-id
+Google sign-in and Google Workspace access are managed through Clerk. The application does not use a separate `NEXT_PUBLIC_GOOGLE_CLIENT_ID` variable.
+
+1. In Google Cloud Console, create or select the ASC Google Cloud project.
+2. Enable the Google Calendar API and Google Drive API.
+3. Configure the OAuth consent screen as **Internal** so only ASC Google Workspace accounts can authorize the app.
+4. Create a Web application OAuth client.
+5. In Clerk, add a Google social connection, enable sign-up and sign-in, turn on **Use custom credentials**, and copy Clerk's authorized redirect URI.
+6. Add that exact Clerk redirect URI to the Google OAuth client, then enter the Google client ID and secret in Clerk.
+7. Configure the following scopes in both Clerk's Google connection and the Google OAuth consent screen:
+
+   ```text
+   openid
+   email
+   profile
+   https://www.googleapis.com/auth/calendar.readonly
+   https://www.googleapis.com/auth/drive.readonly
    ```
 
-Do not add the Google client secret to `.env.local`; it belongs only in Clerk.
-After Google authentication succeeds, Clerk always redirects the user to
-`/dashboard`.
+The scopes above match the current pilot implementation. The dashboard only displays Calendar events and Drive metadata even though the current Drive scope can read file contents. Before a broader rollout, narrow these to the least-privilege scopes used by the final feature set.
 
-## Google Workspace dashboard data
+After changing Google scopes, existing users must open `/account` and reconnect Google so their access token includes the updated permissions.
 
-The dashboard can display the signed-in user's upcoming Google Calendar events
-and recently modified Google Drive file metadata. It uses these read-only OAuth
-scopes:
+## Deploying the pilot to Vercel
 
-- `https://www.googleapis.com/auth/calendar.events.readonly`
-- `https://www.googleapis.com/auth/drive.metadata.readonly`
+1. Import this repository into Vercel.
+2. Add these required environment variables to the Vercel project:
 
-For the integration to work, configure the same Google OAuth client that Clerk
-uses for sign-in:
+   ```text
+   NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
+   CLERK_SECRET_KEY
+   ```
 
-1. In Google Cloud Console, enable both the **Google Calendar API** and the
-   **Google Drive API** for the project.
-2. Add the two scopes above to the OAuth consent screen. If the app remains in
-   testing, add each ASC admin as a test user.
-3. In Clerk's Google SSO connection (with custom credentials enabled), add the
-   same scopes in the connection's **Scopes** field and save.
-4. Each admin must visit `/account` and reconnect their Google account to grant
-   the new permissions. The dashboard will then fetch data server-side using a
-   short-lived Clerk-managed access token.
+3. If ClickUp should be included in the pilot, also add:
 
-The Drive scope intentionally reads only file metadata: names, file types,
-modified times, and Drive links. The application does not download file
-contents.
+   ```text
+   CLICKUP_CLIENT_ID
+   CLICKUP_CLIENT_SECRET
+   ```
 
-## Learn More
+4. Deploy the project.
+5. Add the Vercel deployment URL as an allowed origin in Google Cloud and an allowed URL in Clerk, following the redirect URL shown by Clerk.
+6. Confirm that the Google OAuth consent screen remains restricted to the ASC Workspace domain.
 
-To learn more about Next.js, take a look at the following resources:
+Clerk development keys are acceptable for a brief, low-traffic preview, subject to Clerk's development-instance limits. Use a Clerk production instance and production keys before treating the dashboard as a permanent internal service.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### ClickUp OAuth
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+If ClickUp is enabled, create a ClickUp OAuth app and register this callback URL:
 
-## Deploy on Vercel
+```text
+https://YOUR-VERCEL-DOMAIN/api/clickup/callback
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+The callback must exactly match the deployed Vercel domain. ClickUp is optional for the first pilot; leaving its environment variables unset is the simplest way to test only Google Calendar and Drive.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Assistant pilot checklist
+
+Ask the first tester to check the following:
+
+- Sign in using an ASC Google Workspace account.
+- Confirm that a non-ASC account cannot gain access.
+- Confirm that `/dashboard` loads after sign-in.
+- Confirm that this week's Calendar events appear and open in Google Calendar.
+- Confirm that recent Drive files appear and open in Google Drive.
+- If prompted to reconnect Google, use `/account`, reconnect, and reload the dashboard.
+- If ClickUp is enabled, connect it and confirm that assigned tasks appear and open correctly.
+- Check the dashboard on both a phone and a desktop browser.
+- Sign out and confirm that `/dashboard` is no longer accessible.
+- Record any permission errors, blank states, incorrect data, layout problems, or confusing instructions.
+
+## Validation
+
+Before deploying a new pilot build, run:
+
+```bash
+pnpm lint
+pnpm exec tsc --noEmit --incremental false
+pnpm build
+```
+
+There is not yet an automated test suite. Authentication and third-party integrations should be manually smoke-tested on the deployed Vercel URL.
+
+## Known pre-production follow-ups
+
+- Narrow Google OAuth scopes to the final least-privilege set and keep the code, Clerk, and Google Cloud configuration synchronized.
+- Add and validate OAuth `state` for the ClickUp connection flow before a broader rollout.
+- Replace Clerk development credentials with production credentials.
+- Add automated coverage for authentication, integration error states, and core dashboard rendering.
+- Finalize which shared calendars, Drive folders, and ClickUp workspaces the team should see.
