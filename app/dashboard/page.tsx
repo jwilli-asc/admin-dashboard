@@ -35,7 +35,7 @@ function ExternalLink({ href, children }: { href: string; children: React.ReactN
       href={href}
       target="_blank"
       rel="noreferrer"
-      className="inline-flex items-center gap-1.5 rounded-md border border-border bg-secondary px-3 py-2 text-sm font-medium text-secondary-foreground transition-colors hover:bg-accent"
+      className="inline-flex items-center gap-1.5 border border-foreground/40 px-3 py-2 text-xs font-semibold uppercase tracking-widest transition-colors hover:bg-foreground hover:text-background"
     >
       {children}
       <ArrowUpRight className="size-3.5" aria-hidden="true" />
@@ -44,23 +44,30 @@ function ExternalLink({ href, children }: { href: string; children: React.ReactN
 }
 
 function SectionHeader({
+  index,
   logo,
   title,
   detail,
 }: {
+  index: string;
   logo: string;
   title: string;
   detail: string;
 }) {
   return (
     <div className="flex items-start gap-3">
-      <div className="flex size-10 shrink-0 items-center justify-center rounded-lg border border-border bg-white p-2">
+      <div className="flex size-10 shrink-0 items-center justify-center border border-border bg-white p-2">
         {/* unoptimized: the default image optimizer refuses SVGs */}
         <Image src={logo} alt="" width={24} height={24} unoptimized className="size-full object-contain" />
       </div>
       <div>
-        <h2 className="font-semibold tracking-tight">{title}</h2>
-        <p className="mt-0.5 text-sm text-muted-foreground">{detail}</p>
+        <h2 className="flex items-baseline gap-2 text-sm font-semibold uppercase tracking-widest">
+          <span className="font-mono text-chart-2" aria-hidden="true">
+            {index}
+          </span>
+          {title}
+        </h2>
+        <p className="mt-1 font-mono text-xs text-muted-foreground">{detail}</p>
       </div>
     </div>
   );
@@ -78,7 +85,7 @@ function EmptyState({
   children?: React.ReactNode;
 }) {
   return (
-    <div className="mt-6 flex min-h-56 flex-col items-center justify-center rounded-lg border border-dashed border-border px-6 py-8 text-center">
+    <div className="mt-6 flex min-h-56 flex-col items-center justify-center border border-dashed border-border px-6 py-8 text-center">
       {Icon ? <Icon className="size-5 text-muted-foreground" aria-hidden="true" /> : null}
       <p className={cn("text-sm font-medium", Icon && "mt-3")}>{title}</p>
       <p className="mt-1 max-w-lg text-sm text-muted-foreground">{message}</p>
@@ -113,7 +120,7 @@ function GoogleConnectionNotice({
       {status !== "unavailable" ? (
         <Link
           href="/account"
-          className="mt-4 rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90"
+          className="mt-4 bg-primary px-4 py-2 text-xs font-semibold uppercase tracking-widest text-primary-foreground transition-opacity hover:opacity-90"
         >
           {status === "needs_reconnect" ? "Reconnect Google" : "Connect Google data"}
         </Link>
@@ -158,10 +165,12 @@ function EventChip({ event }: { event: GoogleCalendarEvent }) {
       href={event.htmlLink ?? CALENDAR_URL}
       target="_blank"
       rel="noreferrer"
-      className="block rounded-md border-l-2 border-chart-3 bg-secondary px-2 py-1.5 transition-colors hover:bg-accent"
+      className="block border-l-2 border-foreground bg-secondary px-2 py-1.5 transition-colors hover:bg-accent"
     >
       <span className="block truncate text-xs font-medium">{event.title || "Untitled event"}</span>
-      <span className="mt-0.5 block text-[11px] text-muted-foreground">{formatEventTime(event)}</span>
+      <span className="mt-0.5 block font-mono text-[10px] uppercase text-muted-foreground">
+        {formatEventTime(event)}
+      </span>
       {event.location ? (
         <span className="mt-0.5 flex items-center gap-1 truncate text-[11px] text-muted-foreground">
           <MapPin className="size-3 shrink-0" aria-hidden="true" />
@@ -183,7 +192,7 @@ function CalendarWeekView({ calendar }: { calendar: GoogleDataResult<GoogleCalen
   return (
     <>
       {/* Week grid on tablet and up */}
-      <div className="mt-6 hidden overflow-hidden rounded-lg border border-border md:grid md:grid-cols-7 md:divide-x md:divide-border">
+      <div className="mt-6 hidden overflow-hidden border border-border md:grid md:grid-cols-7 md:divide-x md:divide-border">
         {days.map((day) => (
           <div
             key={day.key}
@@ -193,8 +202,9 @@ function CalendarWeekView({ calendar }: { calendar: GoogleDataResult<GoogleCalen
               day.isPast && "opacity-60",
             )}
           >
-            <p className="px-1 pb-2 text-xs text-muted-foreground">
-              <span className={cn("font-medium", day.isToday && "text-foreground")}>{day.weekday}</span>{" "}
+            <p className="flex items-center gap-1.5 px-1 pb-2 font-mono text-[11px] uppercase tracking-wider text-muted-foreground">
+              {day.isToday ? <span className="size-1.5 bg-chart-2" aria-hidden="true" /> : null}
+              <span className={cn(day.isToday && "font-semibold text-chart-2")}>{day.weekday}</span>{" "}
               {day.dayLabel}
             </p>
             <div className="flex flex-col gap-1.5">
@@ -207,7 +217,7 @@ function CalendarWeekView({ calendar }: { calendar: GoogleDataResult<GoogleCalen
       </div>
 
       {/* Stacked days on phones */}
-      <div className="mt-6 divide-y divide-border rounded-lg border border-border md:hidden">
+      <div className="mt-6 divide-y divide-border border border-border md:hidden">
         {days.map((day) => {
           const events = grouped.get(day.key) ?? [];
 
@@ -220,8 +230,10 @@ function CalendarWeekView({ calendar }: { calendar: GoogleDataResult<GoogleCalen
                 day.isPast && "opacity-60",
               )}
             >
-              <p className="w-16 shrink-0 pt-1 text-xs text-muted-foreground">
-                <span className={cn("block font-medium", day.isToday && "text-foreground")}>{day.weekday}</span>
+              <p className="w-16 shrink-0 pt-1 font-mono text-[11px] uppercase tracking-wider text-muted-foreground">
+                <span className={cn("block", day.isToday && "font-semibold text-chart-2")}>
+                  {day.weekday}
+                </span>
                 {day.dayLabel}
               </p>
               <div className="flex min-w-0 flex-1 flex-col gap-1.5">
@@ -289,7 +301,7 @@ function DriveContent({ drive }: { drive: GoogleDataResult<GoogleDriveFile[]> })
   }
 
   return (
-    <div className="mt-6 divide-y divide-border overflow-hidden rounded-lg border border-border">
+    <div className="mt-6 divide-y divide-border overflow-hidden border border-border">
       {drive.data.map((file) => (
         <a
           key={file.id}
@@ -301,7 +313,7 @@ function DriveContent({ drive }: { drive: GoogleDataResult<GoogleDriveFile[]> })
           <DriveFileIcon mimeType={file.mimeType} />
           <span className="min-w-0 flex-1">
             <span className="block truncate text-sm font-medium">{file.name || "Untitled file"}</span>
-            <span className="mt-0.5 block text-xs text-muted-foreground">
+            <span className="mt-0.5 block font-mono text-[11px] uppercase text-muted-foreground">
               {formatModifiedTime(file.modifiedTime)}
             </span>
           </span>
@@ -338,13 +350,13 @@ function ClickUpTaskRow({ task }: { task: ClickUpTask }) {
       className="group flex items-center gap-3 px-4 py-3.5 transition-colors hover:bg-secondary"
     >
       <span
-        className="size-2.5 shrink-0 rounded-full"
+        className="size-2.5 shrink-0"
         style={{ backgroundColor: task.status.color }}
         aria-hidden="true"
       />
       <span className="min-w-0 flex-1">
         <span className="block truncate text-sm font-medium">{task.name}</span>
-        <span className="mt-0.5 block truncate text-xs text-muted-foreground">
+        <span className="mt-0.5 block truncate font-mono text-[11px] uppercase text-muted-foreground">
           {task.list.name}
           {due ? (
             <>
@@ -362,8 +374,8 @@ function ClickUpTaskRow({ task }: { task: ClickUpTask }) {
 function ClickUpContent({ clickup }: { clickup: ClickUpData }) {
   if (clickup.status === "not_configured") {
     return (
-      <div className="mt-6 flex min-h-56 flex-col items-center justify-center rounded-lg border border-dashed border-border px-6 py-8 text-center">
-        <span className="rounded-full border border-border bg-secondary px-3 py-1 text-xs font-medium uppercase tracking-wide text-secondary-foreground">
+      <div className="mt-6 flex min-h-56 flex-col items-center justify-center border border-dashed border-border px-6 py-8 text-center">
+        <span className="border border-border bg-secondary px-3 py-1 font-mono text-[11px] font-medium uppercase tracking-widest text-secondary-foreground">
           Coming soon
         </span>
         <p className="mt-3 text-sm font-medium">ClickUp tasks will live here</p>
@@ -400,7 +412,7 @@ function ClickUpContent({ clickup }: { clickup: ClickUpData }) {
       >
         <a
           href="/api/clickup/connect"
-          className="mt-4 rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90"
+          className="mt-4 bg-primary px-4 py-2 text-xs font-semibold uppercase tracking-widest text-primary-foreground transition-opacity hover:opacity-90"
         >
           {clickup.status === "needs_reconnect" ? "Reconnect ClickUp" : "Connect ClickUp"}
         </a>
@@ -419,7 +431,7 @@ function ClickUpContent({ clickup }: { clickup: ClickUpData }) {
   }
 
   return (
-    <div className="mt-6 divide-y divide-border overflow-hidden rounded-lg border border-border">
+    <div className="mt-6 divide-y divide-border overflow-hidden border border-border">
       {clickup.tasks.map((task) => (
         <ClickUpTaskRow key={task.id} task={task} />
       ))}
@@ -429,36 +441,50 @@ function ClickUpContent({ clickup }: { clickup: ClickUpData }) {
 
 export default async function Dashboard() {
   const [workspace, clickup] = await Promise.all([getGoogleWorkspaceData(), getClickUpData()]);
+  const week = getWeekDays();
 
   return (
     <div className="min-h-screen px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
       <main className="mx-auto flex w-full max-w-7xl flex-col gap-6">
-        <header className="flex flex-col justify-between gap-4 border-b border-border pb-6 sm:flex-row sm:items-center">
-          <div className="flex items-center gap-4">
-            <Image
-              src="/asc-logo-horizontal.png"
-              alt="Austin STEM Center"
-              width={1600}
-              height={467}
-              priority
-              className="h-10 w-auto sm:h-12"
-            />
-            <div className="hidden h-8 w-px bg-border sm:block" aria-hidden="true" />
-            <h1 className="text-lg font-semibold tracking-tight sm:text-xl">Admin dashboard</h1>
+        <header className="flex flex-col gap-4 border-b border-border pb-6">
+          <div className="flex items-center justify-between gap-4 border-t-2 border-foreground pt-2 font-mono text-[11px] uppercase tracking-widest text-muted-foreground">
+            <span>Austin STEM Center · Internal Operations</span>
+            <span className="text-right">
+              WK {week[0].key} → {week[6].key}
+            </span>
           </div>
-          <div className="flex items-center gap-3 self-end sm:self-auto">
-            <span className="hidden text-sm text-muted-foreground sm:inline">Your workspace</span>
-            <UserButton
-              userProfileProps={{
-                additionalOAuthScopes: { google: GOOGLE_WORKSPACE_OAUTH_SCOPES },
-              }}
-            />
+          <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+            <div className="flex items-center gap-4">
+              <Image
+                src="/asc-logo-horizontal.png"
+                alt="Austin STEM Center"
+                width={1600}
+                height={467}
+                priority
+                className="h-10 w-auto sm:h-12"
+              />
+              <div className="hidden h-8 w-px bg-border sm:block" aria-hidden="true" />
+              <h1 className="text-lg font-semibold uppercase tracking-widest sm:text-xl">
+                Admin dashboard
+              </h1>
+            </div>
+            <div className="flex items-center gap-3 self-end sm:self-auto">
+              <span className="hidden font-mono text-[11px] uppercase tracking-widest text-muted-foreground sm:inline">
+                Your workspace
+              </span>
+              <UserButton
+                userProfileProps={{
+                  additionalOAuthScopes: { google: GOOGLE_WORKSPACE_OAUTH_SCOPES },
+                }}
+              />
+            </div>
           </div>
         </header>
 
-        <section className="rounded-xl border border-border bg-card p-5 text-card-foreground sm:p-6">
+        <section className="border border-border border-t-2 border-t-foreground bg-card p-5 text-card-foreground sm:p-6">
           <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
             <SectionHeader
+              index="01"
               logo="/logos/google-calendar.svg"
               title="Google Calendar"
               detail="This week, Sunday through Saturday, from your primary calendar."
@@ -469,25 +495,27 @@ export default async function Dashboard() {
         </section>
 
         <section className="grid gap-6 lg:grid-cols-2">
-          <section className="rounded-xl border border-border bg-card p-5 text-card-foreground sm:p-6">
+          <section className="border border-border border-t-2 border-t-foreground bg-card p-5 text-card-foreground sm:p-6">
             <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
               <SectionHeader
+                index="02"
                 logo="/logos/google-drive.svg"
                 title="Google Drive"
                 detail="Your eight most recently modified Drive files."
               />
               <ExternalLink href={DRIVE_URL}>Open Drive</ExternalLink>
             </div>
-            <div className="mt-5 flex items-center gap-2 text-sm text-muted-foreground">
-              <Search className="size-4" aria-hidden="true" />
+            <div className="mt-5 flex items-center gap-2 font-mono text-xs text-muted-foreground">
+              <Search className="size-3.5" aria-hidden="true" />
               Metadata only — file contents stay in Google Drive.
             </div>
             <DriveContent drive={workspace.drive} />
           </section>
 
-          <section className="rounded-xl border border-border bg-card p-5 text-card-foreground sm:p-6">
+          <section className="border border-border border-t-2 border-t-foreground bg-card p-5 text-card-foreground sm:p-6">
             <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
               <SectionHeader
+                index="03"
                 logo="/logos/clickup.svg"
                 title="ClickUp Tasks"
                 detail="Open tasks assigned to you, ordered by due date."
@@ -497,6 +525,26 @@ export default async function Dashboard() {
             <ClickUpContent clickup={clickup} />
           </section>
         </section>
+
+        <footer className="flex flex-wrap items-center gap-x-6 gap-y-2 border-t border-border pt-4 font-mono text-[11px] uppercase tracking-widest text-muted-foreground">
+          <span>Design reference</span>
+          <a
+            href="/design/vibe-lab.html"
+            target="_blank"
+            rel="noreferrer"
+            className="text-foreground transition-colors hover:text-chart-2"
+          >
+            Public-site vibe lab ↗
+          </a>
+          <a
+            href="/design/joyful-discovery-mock.html"
+            target="_blank"
+            rel="noreferrer"
+            className="text-foreground transition-colors hover:text-chart-2"
+          >
+            Joyful admin mock ↗
+          </a>
+        </footer>
       </main>
     </div>
   );

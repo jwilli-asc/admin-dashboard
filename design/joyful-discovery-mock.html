@@ -1,0 +1,287 @@
+<title>ASC Admin — “Joyful Discovery” mock</title>
+<style>
+  :root {
+    --paper: #f7f2e4;
+    --card: #fffdf6;
+    --ink: #3a352a;
+    --pencil: #857d68;
+    --grid: rgba(67, 92, 126, 0.09);
+    --line: rgba(58, 53, 42, 0.14);
+    --blue: #435c7e;
+    --red: #d64516;
+    --gold: #d9a924;
+    --green: #1e9e70;
+    --purple: #8e5283;
+    --serif: "Iowan Old Style", Palatino, Georgia, serif;
+    --hand: "Bradley Hand", "Segoe Print", "Comic Sans MS", cursive;
+    --sans: ui-rounded, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background:
+      linear-gradient(var(--grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid) 1px, transparent 1px),
+      var(--paper);
+    background-size: 26px 26px;
+    color: var(--ink);
+    font-family: var(--sans);
+    line-height: 1.5;
+  }
+  a { color: inherit; text-decoration: none; }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 26px 18px 70px; }
+
+  /* ---------- mock banner ---------- */
+  .mock-note {
+    display: inline-block;
+    margin-bottom: 18px;
+    transform: rotate(-1.5deg);
+    border: 2px dashed rgba(214, 69, 22, 0.55);
+    color: var(--red);
+    background: rgba(255, 253, 246, 0.8);
+    border-radius: 8px;
+    padding: 4px 12px;
+    font-family: var(--hand);
+    font-size: 14px;
+  }
+
+  /* ---------- header ---------- */
+  header { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 14px 24px; padding-bottom: 20px; }
+  .brand h1 {
+    margin: 0;
+    font-family: var(--serif);
+    font-size: clamp(26px, 4vw, 34px);
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+  .brand h1 .hl { background: linear-gradient(transparent 62%, rgba(217, 169, 36, 0.5) 62%); }
+  .brand .subtitle { margin: 2px 0 0; font-size: 14px; color: var(--pencil); }
+  .weeknote { font-family: var(--hand); color: var(--blue); font-size: 16px; transform: rotate(-1deg); }
+  .avatar {
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    background: var(--blue);
+    color: #fffdf6;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 14px;
+    border: 2px solid #fffdf6;
+    box-shadow: 0 1px 4px rgba(58, 53, 42, 0.25);
+  }
+  .userbox { display: flex; align-items: center; gap: 10px; }
+
+  /* ---------- cards ---------- */
+  .card {
+    position: relative;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    box-shadow: 0 2px 0 rgba(58, 53, 42, 0.08);
+    padding: 22px;
+    margin-top: 24px;
+  }
+  .card::before {
+    content: "";
+    position: absolute;
+    top: -10px; left: 34px;
+    width: 84px; height: 22px;
+    transform: rotate(-2deg);
+    background: rgba(217, 169, 36, 0.32);
+    border: 1px solid rgba(58, 53, 42, 0.07);
+    border-radius: 2px;
+  }
+  .card-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; gap: 12px; }
+  .titleblock { display: flex; gap: 12px; align-items: flex-start; }
+  .dot { flex: none; margin-top: 5px; width: 16px; height: 16px; border-radius: 50%; }
+  .dot.tri { width: 0; height: 0; border-radius: 0; border-left: 9px solid transparent; border-right: 9px solid transparent; border-bottom: 16px solid var(--gold); background: none; }
+  .dot.sq { border-radius: 4px; }
+  .titleblock h2 { margin: 0; font-family: var(--serif); font-size: 20px; font-weight: 700; }
+  .titleblock p { margin: 2px 0 0; font-size: 13px; color: var(--pencil); }
+  .openlink {
+    font-size: 13px;
+    font-weight: 600;
+    background: #f1ead6;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 7px 14px;
+    transition: background 0.15s;
+  }
+  .openlink:hover { background: #e9dfc4; }
+
+  /* ---------- calendar ---------- */
+  .week { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; margin-top: 18px; }
+  @media (max-width: 860px) { .week { grid-template-columns: 1fr; } }
+  .day { border: 1px solid var(--line); border-radius: 10px; background: rgba(255, 253, 246, 0.7); padding: 8px; min-height: 148px; }
+  .day.today { background: #fdf7e3; border-color: rgba(217, 169, 36, 0.8); box-shadow: 0 0 0 2px rgba(217, 169, 36, 0.35); }
+  .day.past { opacity: 0.55; }
+  .day h3 { margin: 0 0 8px; font-size: 12px; font-weight: 600; color: var(--pencil); }
+  .day h3 b { color: var(--ink); font-weight: 700; }
+  .day.today h3 .today-note { display: inline-block; font-family: var(--hand); color: var(--red); font-size: 12px; transform: rotate(-2deg); margin-left: 4px; }
+  .evt { display: block; border-radius: 8px; padding: 6px 8px 6px 10px; margin-top: 6px; font-size: 12px; font-weight: 600; position: relative; background: #f4eedb; }
+  .evt::before { content: ""; position: absolute; left: 0; top: 6px; bottom: 6px; width: 3px; border-radius: 3px; }
+  .evt small { display: block; font-weight: 400; color: var(--pencil); font-size: 11px; }
+  .evt.c-blue::before { background: var(--blue); }
+  .evt.c-red::before { background: var(--red); }
+  .evt.c-gold::before { background: var(--gold); }
+  .evt.c-green::before { background: var(--green); }
+  .evt.c-purple::before { background: var(--purple); }
+  .free { font-family: var(--hand); color: var(--pencil); font-size: 12px; }
+
+  /* ---------- two-up ---------- */
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  @media (max-width: 900px) { .two { grid-template-columns: 1fr; } }
+  .rows { margin-top: 16px; border-top: 1px dashed var(--line); }
+  .row { display: flex; align-items: center; gap: 12px; padding: 11px 4px; border-bottom: 1px dashed var(--line); }
+  .row:hover { background: rgba(217, 169, 36, 0.08); }
+  .ficon { flex: none; width: 30px; height: 34px; border-radius: 5px; position: relative; }
+  .ficon::after { content: ""; position: absolute; left: 6px; right: 6px; top: 9px; height: 2px; background: rgba(255, 253, 246, 0.85); box-shadow: 0 6px 0 rgba(255, 253, 246, 0.85), 0 12px 0 rgba(255, 253, 246, 0.85); }
+  .f-blue { background: var(--blue); }
+  .f-green { background: var(--green); }
+  .f-gold { background: var(--gold); }
+  .f-purple { background: var(--purple); }
+  .row .meta { min-width: 0; flex: 1; }
+  .row .meta .name { display: block; font-weight: 600; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .row .meta .sub { display: block; font-size: 12px; color: var(--pencil); font-style: italic; font-family: var(--serif); }
+  .status { flex: none; width: 12px; height: 12px; border-radius: 50%; }
+  .due-late { color: var(--red); font-weight: 700; }
+  .late-note { font-family: var(--hand); color: var(--red); font-size: 12px; }
+  .footer {
+    margin-top: 40px;
+    text-align: center;
+    font-family: var(--hand);
+    color: var(--pencil);
+    font-size: 14px;
+    transform: rotate(-0.5deg);
+  }
+</style>
+
+<div class="wrap">
+  <span class="mock-note">mock-up — “joyful discovery” take on the admin dash, sample data</span>
+
+  <header>
+    <div class="brand">
+      <h1>Austin STEM Center <span class="hl">admin</span></h1>
+      <p class="subtitle">Everything for the week, all in one notebook.</p>
+    </div>
+    <span class="weeknote">week of July 12 — summer camp season! ☀</span>
+    <div class="userbox">
+      <span class="avatar">JW</span>
+    </div>
+  </header>
+
+  <!-- calendar -->
+  <section class="card">
+    <div class="card-head">
+      <div class="titleblock">
+        <span class="dot" style="background: var(--blue)"></span>
+        <div>
+          <h2>This week’s calendar</h2>
+          <p>Sunday through Saturday, from your primary calendar.</p>
+        </div>
+      </div>
+      <a class="openlink" href="#" onclick="return false">Open Calendar ↗</a>
+    </div>
+    <div class="week">
+      <div class="day today">
+        <h3><b>Sun</b> Jul 12 <span class="today-note">← today!</span></h3>
+        <span class="free">quiet day — good for tinkering</span>
+      </div>
+      <div class="day">
+        <h3><b>Mon</b> Jul 13</h3>
+        <a class="evt c-red" href="#" onclick="return false">Camp drop-off<small>8:30 AM · Front desk</small></a>
+        <a class="evt c-blue" href="#" onclick="return false">Staff huddle<small>9:15 AM</small></a>
+      </div>
+      <div class="day">
+        <h3><b>Tue</b> Jul 14</h3>
+        <a class="evt c-green" href="#" onclick="return false">Bottle rockets<small>10:00 AM · Back lot</small></a>
+      </div>
+      <div class="day">
+        <h3><b>Wed</b> Jul 15</h3>
+        <a class="evt c-purple" href="#" onclick="return false">FIRST scrimmage<small>4:30 PM · Arena</small></a>
+      </div>
+      <div class="day">
+        <h3><b>Thu</b> Jul 16</h3>
+        <a class="evt c-gold" href="#" onclick="return false">Field trip: fab tour<small>9:00 AM · Offsite</small></a>
+      </div>
+      <div class="day">
+        <h3><b>Fri</b> Jul 17</h3>
+        <a class="evt c-blue" href="#" onclick="return false">Parent showcase<small>5:30 PM · Makerspace</small></a>
+      </div>
+      <div class="day">
+        <h3><b>Sat</b> Jul 18</h3>
+        <span class="free">no events</span>
+      </div>
+    </div>
+  </section>
+
+  <div class="two">
+    <!-- drive -->
+    <section class="card">
+      <div class="card-head">
+        <div class="titleblock">
+          <span class="dot tri"></span>
+          <div>
+            <h2>Google Drive</h2>
+            <p>Your eight most recently modified files.</p>
+          </div>
+        </div>
+        <a class="openlink" href="#" onclick="return false">Open Drive ↗</a>
+      </div>
+      <div class="rows">
+        <div class="row">
+          <span class="ficon f-green"></span>
+          <span class="meta"><span class="name">Summer Camp Roster — Week 6</span><span class="sub">updated this hour</span></span>
+        </div>
+        <div class="row">
+          <span class="ficon f-blue"></span>
+          <span class="meta"><span class="name">Fall Curriculum Draft</span><span class="sub">updated 3h ago</span></span>
+        </div>
+        <div class="row">
+          <span class="ficon f-gold"></span>
+          <span class="meta"><span class="name">Field Trip Waivers (signed)</span><span class="sub">updated yesterday</span></span>
+        </div>
+        <div class="row">
+          <span class="ficon f-purple"></span>
+          <span class="meta"><span class="name">FY27 Budget Sketch</span><span class="sub">updated 2d ago</span></span>
+        </div>
+      </div>
+    </section>
+
+    <!-- clickup -->
+    <section class="card">
+      <div class="card-head">
+        <div class="titleblock">
+          <span class="dot sq" style="background: var(--purple)"></span>
+          <div>
+            <h2>ClickUp tasks</h2>
+            <p>Open tasks assigned to you, by due date.</p>
+          </div>
+        </div>
+        <a class="openlink" href="#" onclick="return false">Open ClickUp ↗</a>
+      </div>
+      <div class="rows">
+        <div class="row">
+          <span class="status" style="background: var(--red)"></span>
+          <span class="meta"><span class="name">Update waiver form</span><span class="sub"><span class="due-late">due Jul 10</span> <span class="late-note">← oops!</span></span></span>
+        </div>
+        <div class="row">
+          <span class="status" style="background: var(--gold)"></span>
+          <span class="meta"><span class="name">Order servo motors for robotics</span><span class="sub">Camp Ops · due Jul 14</span></span>
+        </div>
+        <div class="row">
+          <span class="status" style="background: var(--blue)"></span>
+          <span class="meta"><span class="name">Email week-7 camp parents</span><span class="sub">Communications · due Jul 15</span></span>
+        </div>
+        <div class="row">
+          <span class="status" style="background: var(--green)"></span>
+          <span class="meta"><span class="name">Book bus for fab-lab field trip</span><span class="sub">Camp Ops · due Jul 16</span></span>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <p class="footer">— end of this week’s notebook page —</p>
+</div>
