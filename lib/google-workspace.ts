@@ -8,7 +8,7 @@ type ClerkClient = Awaited<ReturnType<typeof clerkClient>>;
 // dashboard, or reconnecting keeps prompting for consent.
 export const GOOGLE_WORKSPACE_OAUTH_SCOPES = [
   "https://www.googleapis.com/auth/calendar.readonly",
-  "https://www.googleapis.com/auth/drive.readonly",
+  "https://www.googleapis.com/auth/drive.metadata.readonly",
 ];
 
 export type GoogleCalendarEvent = {

@@ -62,10 +62,10 @@ Google sign-in and Google Workspace access are managed through Clerk. The applic
    email
    profile
    https://www.googleapis.com/auth/calendar.readonly
-   https://www.googleapis.com/auth/drive.readonly
+   https://www.googleapis.com/auth/drive.metadata.readonly
    ```
 
-The scopes above match the current pilot implementation. The dashboard only displays Calendar events and Drive metadata even though the current Drive scope can read file contents. Before a broader rollout, narrow these to the least-privilege scopes used by the final feature set.
+The scopes above match the current pilot implementation. The dashboard only displays Calendar events and Drive metadata; it does not read or download Drive file contents.
 
 After changing Google scopes, existing users must open `/account` and reconnect Google so their access token includes the updated permissions.
 
